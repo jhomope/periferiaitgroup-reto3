@@ -103,7 +103,9 @@ Resultados esperados (PRD 7.4):
 
 ## Link de prueba
 
-**URL pública:** _se publica al hacer el deploy (pasos abajo)_ — PRD 9.3.
+**URL pública: [https://compras-bot-reto3.onrender.com](https://compras-bot-reto3.onrender.com)** — PRD 9.3.
+
+> Sin la clave del modelo configurada, el chat responde *«Falta ANTHROPIC_API_KEY…»*; `bun run demo` y `bun test` funcionan igual. La clave se agrega como Secret en el dashboard de Render (ver abajo).
 
 ### Deploy en Render (elegido para la defensa)
 
