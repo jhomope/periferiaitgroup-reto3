@@ -1,0 +1,19 @@
+# Blueprint de Render (PRD 9.3 — link público de prueba).
+# En Render: New + Blueprint → conecta este repositorio → deploy automático.
+# La clave del modelo NUNCA va aquí: se define como Secret en el dashboard.
+services:
+  - type: web
+    name: compras-bot-reto3
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/server.ts
+    healthCheckPath: /api/health
+    envVars:
+      - key: LLM_PROVIDER
+        value: anthropic
+      # Clave del proveedor: crearla como Secret en el dashboard de Render
+      # (Environment → Add Environment Variable → Secret: ANTHROPIC_API_KEY).
+      # Alternativa: LLM_PROVIDER=openai + OPENAI_API_KEY.
+      - key: LLM_MAX_ITERACIONES
+        value: "25"

@@ -19,7 +19,7 @@ bun run dev               # levanta backend + front en http://localhost:8787
 
 En una máquina limpia con Bun y las variables de `.env.example` tarda menos de 2 minutos.
 
-**Requisitos:** [Bun](https://bun.sh) ≥ 1.2 (o Node 20+ con `bun run start:node`).
+**Requisitos:** [Bun](https://bun.sh) ≥ 1.2 — o **Node ≥ 24** (`node src/server.ts`, type stripping nativo; en Node 20–22 correr con Bun: `bun run start`).
 
 ---
 
@@ -103,7 +103,17 @@ Resultados esperados (PRD 7.4):
 
 ## Link de prueba
 
-Ver [sección "Link para probar"](#link-para-probar) al final de este archivo.
+**URL pública:** _se publica al hacer el deploy (pasos abajo)_ — PRD 9.3.
+
+### Deploy en Render (elegido para la defensa)
+
+1. Conecta este repositorio en [render.com](https://render.com) → **New + Blueprint** → apunta al archivo `render.yaml` (está en la raíz).
+2. En **Environment → Secrets** crea `ANTHROPIC_API_KEY` (o `OPENAI_API_KEY` + `LLM_PROVIDER=openai`). La clave nunca toca el repositorio.
+3. Render asigna una URL pública tipo `https://compras-bot-reto3.onrender.com`.
+
+Requisitos de la instancia: Node ≥ 24 (type stripping nativo; `engines` fijado en `package.json`), build `npm install`, arranque `node src/server.ts`, health check en `/api/health`. El plan free de Render duerme el servicio tras 15 min de inactividad (~50 s de despertar); para la convivencia mantenerlo activo con un ping o subir el plan.
+
+**Alternativa local (con penalización -10 si no hay link):** `bun run dev` → `http://localhost:8787`.
 
 ---
 

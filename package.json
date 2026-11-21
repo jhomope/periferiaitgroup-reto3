@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "description": "Reto 03 Periferia IT Group — Agente conversacional de Órdenes de Compra en SAP simulado",
   "scripts": {
     "dev": "bun run src/server.ts",
