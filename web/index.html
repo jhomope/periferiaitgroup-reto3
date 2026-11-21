@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Compras Bot — Órdenes de Compra SAP · Reto 03</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="titulo">
+        <h1>Compras Bot</h1>
+        <span class="sub">Reto 03 · Órdenes de Compra en SAP simulado · Periferia IT Group</span>
+      </div>
+      <div class="acciones">
+        <span id="salud" class="badge">verificando…</span>
+        <button id="nueva" type="button" title="Borra la conversación actual">Nueva sesión</button>
+      </div>
+    </header>
+
+    <div id="banner" class="banner oculto" role="status">
+      ⚠ El agente está esperando <strong>tu confirmación</strong> para crear la orden de compra.
+      Responde “confirmo” (o corrige el dato) para continuar.
+    </div>
+
+    <main id="chat" aria-live="polite"></main>
+
+    <section id="sugerencias" class="sugerencias"></section>
+
+    <form id="formulario" autocomplete="off">
+      <input
+        id="mensaje"
+        type="text"
+        placeholder='Procesa la solicitud "sol-004" y no la crees hasta que yo lo confirme…'
+        aria-label="Mensaje para el agente"
+      />
+      <button type="submit" id="enviar">Enviar</button>
+    </form>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
