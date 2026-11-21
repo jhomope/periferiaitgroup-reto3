@@ -1,0 +1,16 @@
+# Dependencias
+node_modules/
+
+# Salida generada en ejecución (se regenera con `bun run demo.ts`)
+out/
+
+# Secretos: la clave del modelo NUNCA se versiona
+.env
+.env.*
+!.env.example
+
+# Logs y temporales
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
