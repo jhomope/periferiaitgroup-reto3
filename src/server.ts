@@ -9,6 +9,8 @@ import { leerConfigLlm, crearAdaptador } from "./llm/index.ts";
 import type { AdaptadorLlm } from "./llm/adapter.ts";
 import { RepositorioSesiones } from "./sesiones.ts";
 import { herramientasOc } from "./tools/oc.ts";
+import { leerPaquete } from "./core/lectura.ts";
+import { validarPaquete } from "./core/validacion.ts";
 
 /**
  * Backend del reto 03: API del chat + ciclo del agente.
@@ -171,6 +173,30 @@ function manejarCasos(res: ServerResponse): void {
   responder(res, 200, { casos });
 }
 
+/** Demo pública determinista basada en las mismas funciones que demo.ts. Solo lectura: no crea OCs ni modifica out/. */
+function manejarDemo(res: ServerResponse): void {
+  const dir = join(raiz, "fixtures", "reto-03", "solicitudes");
+  const casos = existsSync(dir)
+    ? readdirSync(dir).filter((n) => statSync(join(dir, n)).isDirectory()).sort()
+    : [];
+  const resultados = casos.map((caso) => {
+    const paquete = leerPaquete(raiz, caso);
+    return {
+      caso,
+      solicitudId: paquete.solicitud.solicitud_id,
+      proveedor: paquete.solicitud.proveedor_nombre,
+      valorTotal: paquete.solicitud.valor_total,
+      faltantes: paquete.faltantes,
+      ...validarPaquete(raiz, paquete),
+    };
+  });
+  responder(res, 200, {
+    modo: "demo-determinista-sin-llm",
+    descripcion: "Validación de los seis casos con las reglas RC1–RC10. No crea órdenes ni modifica datos.",
+    resultados,
+  });
+}
+
 const servidor = createServer((req, res) => {
   const url = new URL(req.url ?? "/", "http://localhost");
   const ruta = url.pathname;
@@ -193,6 +219,14 @@ const servidor = createServer((req, res) => {
       }
       if (req.method === "GET" && ruta === "/api/casos") {
         manejarCasos(res);
+        return;
+      }
+      if (req.method === "GET" && ruta === "/api/demo") {
+        manejarDemo(res);
+        return;
+      }
+      if (req.method === "GET" && ruta === "/demo") {
+        servirEstatico(res, "/demo.html");
         return;
       }
       const sesionRuta = ruta.match(/^\/api\/sessions\/([A-Za-z0-9_-]{1,64})$/);

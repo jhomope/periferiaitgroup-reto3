@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo determinista — Compras Bot</title>
+    <link rel="stylesheet" href="/style.css" />
+    <style>
+      .demo-main { width: min(100% - 2rem, 980px); margin: 2rem auto; }
+      .demo-main a { color: #9cc5ff; }
+      .demo-intro { color: #c5ccd8; line-height: 1.6; }
+      .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+      .caso { border: 1px solid #394150; border-radius: 12px; background: #171c24; padding: 1.15rem; }
+      .caso h2 { display:flex; justify-content:space-between; align-items:center; margin:0 0 .75rem; font-size:1.1rem; }
+      .caso p { margin:.45rem 0; color:#c5ccd8; line-height:1.45; }
+      .estado { padding:.2rem .55rem; border-radius:99px; font-size:.75rem; }
+      .estado.ok { background:#17452f; color:#9fe0b9; }
+      .estado.bloqueado { background:#542a2a; color:#ffc0b7; }
+      .estado.confirmar { background:#57471d; color:#ffe097; }
+      .caso ul { padding-left:1.2rem; color:#f0b6ad; font-size:.88rem; line-height:1.5; }
+      .caso .confirmaciones { color:#ffe097; }
+      .loading { color:#c5ccd8; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="titulo"><h1>Demo determinista</h1><span class="sub">Seis casos · reglas RC1–RC10 · sin llamadas a un LLM</span></div>
+      <div class="acciones"><a href="/">Volver al chat</a></div>
+    </header>
+    <main class="demo-main">
+      <p class="demo-intro">Resultados calculados en el servidor a partir de los mismos fixtures y validaciones de <code>demo.ts</code>. Esta vista es de solo lectura: no crea órdenes ni requiere una clave de modelo.</p>
+      <div id="resultados" class="demo-grid"><p class="loading">Procesando casos…</p></div>
+    </main>
+    <script>
+      const escapar = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+      async function cargar() {
+        const raiz = document.getElementById("resultados");
+        try {
+          const r = await fetch("/api/demo", {cache:"no-store"});
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          const {resultados} = await r.json();
+          raiz.innerHTML = resultados.map((c) => {
+            const titulo = c.apta ? (c.confirmaciones.length ? "Requiere confirmación" : "Apta") : "Bloqueada";
+            const clase = !c.apta ? "bloqueado" : c.confirmaciones.length ? "confirmar" : "ok";
+            const bloqueos = c.bloqueos.length ? `<p><strong>Bloqueos</strong></p><ul>${c.bloqueos.map(x=>`<li>${escapar(x)}</li>`).join("")}</ul>` : "";
+            const confirmaciones = c.confirmaciones.length ? `<p><strong>Confirmaciones</strong></p><ul class="confirmaciones">${c.confirmaciones.map(x=>`<li>${escapar(x.codigo)}: ${escapar(x.detalle)}</li>`).join("")}</ul>` : "";
+            const derivados = Object.entries(c.derivados).map(([k,v])=>`${k}: ${v}`).join(" · ");
+            return `<article class="caso"><h2>${escapar(c.caso)} <span class="estado ${clase}">${titulo}</span></h2><p><strong>Solicitud:</strong> ${escapar(c.solicitudId)}</p><p><strong>Proveedor:</strong> ${escapar(c.proveedor)}</p><p><strong>Valor:</strong> ${Number(c.valorTotal).toLocaleString("es-CO")} COP</p><p><strong>Compra retroactiva:</strong> ${c.retroactiva ? "Sí" : "No"}</p>${derivados ? `<p><strong>Derivados:</strong> ${escapar(derivados)}</p>` : ""}${bloqueos}${confirmaciones}</article>`;
+          }).join("");
+        } catch (e) { raiz.innerHTML = `<p>No pude cargar la demo: ${escapar(e.message)}</p>`; }
+      }
+      void cargar();
+    </script>
+  </body>
+</html>
